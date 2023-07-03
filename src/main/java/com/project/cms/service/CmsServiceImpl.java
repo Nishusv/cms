@@ -14,10 +14,15 @@ import org.springframework.stereotype.Service;
 import com.project.cms.model.AttendanceInfo;
 import com.project.cms.model.LeaveDetails;
 import com.project.cms.model.SalaryInfo;
+import com.project.cms.model.SemInfo;
+import com.project.cms.model.Student;
+import com.project.cms.model.StudentAttendanceInfo;
+import com.project.cms.model.StudentInfo;
 import com.project.cms.model.Teacher;
 import com.project.cms.model.TeacherInfo;
 import com.project.cms.model.User;
 import com.project.cms.model.UserRegistration;
+import com.project.cms.repository.StudentRepository;
 import com.project.cms.repository.TeacherRepository;
 import com.project.cms.repository.UserRepository;
 
@@ -33,6 +38,9 @@ public class CmsServiceImpl implements CmsService {
 
 	@Autowired
 	private TeacherRepository teacherRepo;
+
+	@Autowired
+	private StudentRepository studentRepo;
 
 	@Override
 	public UserRegistration saveUser(User user) {
@@ -112,31 +120,32 @@ public class CmsServiceImpl implements CmsService {
 							.month(x.getMonth()).salaryDate(x.getSalaryDate()).netSalary(x.getNetSalary())
 							.totalDeduction(auth).build())
 					.collect(Collectors.toList());
-			
+
 			AttendanceInfo attendanceInfoLocal = teacherInfo.getAttendanceInfo().get(0);
 
 			LeaveDetails leaveDetails = LeaveDetails.builder().annualLeave(teacherInfo.getLeaveInfo().getAnnualLeave())
 					.annualLeaveUsed(teacherInfo.getLeaveInfo().getAnnualLeaveUsed())
 					.otherLeave(teacherInfo.getLeaveInfo().getOtherLeave())
-					.otherLeaveUsed(teacherInfo.getLeaveInfo().getOtherLeaveUsed()).
-					sickLeave(teacherInfo.getLeaveInfo().getSickLeave()).sickLeaveUsed(teacherInfo.getLeaveInfo().getSickLeaveUsed()).build();
+					.otherLeaveUsed(teacherInfo.getLeaveInfo().getOtherLeaveUsed())
+					.sickLeave(teacherInfo.getLeaveInfo().getSickLeave())
+					.sickLeaveUsed(teacherInfo.getLeaveInfo().getSickLeaveUsed()).build();
 
 			AttendanceInfo attendanceInfo = AttendanceInfo.builder().jan(attendanceInfoLocal.getJan())
-					.feb(attendanceInfoLocal.getFeb()).mar(attendanceInfoLocal.getMar()).apr(attendanceInfoLocal.getApr())
-					.may(attendanceInfoLocal.getMay()).june(attendanceInfoLocal.getJune()).build();
+					.feb(attendanceInfoLocal.getFeb()).mar(attendanceInfoLocal.getMar())
+					.apr(attendanceInfoLocal.getApr()).may(attendanceInfoLocal.getMay())
+					.june(attendanceInfoLocal.getJune()).build();
 
 			Teacher teacher = Teacher.builder().name(teacherInfo.getDashboardInfo().getName())
 					.dob(teacherInfo.getDashboardInfo().getDob()).gender(teacherInfo.getDashboardInfo().getGender())
 					.qualification(teacherInfo.getDashboardInfo().getQualification())
 					.designation(teacherInfo.getDashboardInfo().getDesignation())
-					.mobile(teacherInfo.getDashboardInfo().getMobile())
-					.email(teacherInfo.getDashboardInfo().getEmail())
+					.mobile(teacherInfo.getDashboardInfo().getMobile()).email(teacherInfo.getDashboardInfo().getEmail())
 					.emergencyNumber(teacherInfo.getDashboardInfo().getEmergencyNumber())
 					.address(teacherInfo.getDashboardInfo().getAddress())
 					.lastWorkingCompany(teacherInfo.getDashboardInfo().getLastWorkingCompany())
 					.presentCompany(teacherInfo.getDashboardInfo().getPresentWorkingCompany())
-					.joiningDate(teacherInfo.getDashboardInfo().getJoiningDate()).fatherName(teacherInfo.getDashboardInfo().getFatherName())
-					.leaveDetails(leaveDetails)
+					.joiningDate(teacherInfo.getDashboardInfo().getJoiningDate())
+					.fatherName(teacherInfo.getDashboardInfo().getFatherName()).leaveDetails(leaveDetails)
 					.attendanceInfo(attendanceInfo).salaryInfo(salary).build();
 
 			return teacherRepo.save(teacher);
@@ -148,7 +157,45 @@ public class CmsServiceImpl implements CmsService {
 
 	public Teacher getTeacher(String email) {
 		return teacherRepo.findByEmail(email);
-		
+	}
+
+	public Student addStudent(StudentInfo studentInfo, HttpHeaders httpHeaders) {
+
+		UserRegistration user = getUser(studentInfo.getDashboardInfo().getEmail());
+
+		String auth = httpHeaders.getFirst(HttpHeaders.AUTHORIZATION);
+
+		if (auth.equals(user.getAuthorization())) {
+
+			StudentAttendanceInfo attendanceInfoLocal = studentInfo.getAttendanceInfo().get(0);
+
+			StudentAttendanceInfo attendanceInfo = StudentAttendanceInfo.builder().jan(attendanceInfoLocal.getJan())
+					.feb(attendanceInfoLocal.getFeb()).mar(attendanceInfoLocal.getMar())
+					.apr(attendanceInfoLocal.getApr()).may(attendanceInfoLocal.getMay())
+					.june(attendanceInfoLocal.getJune()).build();
+			
+			SemInfo semInfo = studentInfo.getSemDetails().get(0);
+			
+			SemInfo sem = SemInfo.builder().sem1(semInfo.getSem1()).sem2(semInfo.getSem2()).sem3(semInfo.getSem3())
+					.sem4(semInfo.getSem4()).sem5(semInfo.getSem5()).sem6(semInfo.getSem6()).build();
+
+			Student teacher = Student.builder().name(studentInfo.getDashboardInfo().getName())
+					.dob(studentInfo.getDashboardInfo().getDob()).gender(studentInfo.getDashboardInfo().getGender())
+					.mobile(studentInfo.getDashboardInfo().getMobile()).email(studentInfo.getDashboardInfo().getEmail())
+					.address(studentInfo.getDashboardInfo().getAddress())
+					.fatherName(studentInfo.getDashboardInfo().getFatherName()).attendanceInfo(attendanceInfo)
+					.semInfo(sem).build();
+
+			return studentRepo.save(teacher);
+
+		} else {
+			throw new ApplicationContextException("User is not authorized to do the transaction");
+		}
+
+	}
+
+	public Student getStudent(String email) {
+		return studentRepo.findByEmail(email);
 	}
 
 }
