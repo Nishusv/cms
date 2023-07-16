@@ -43,5 +43,7 @@ public class UserRegistration implements Serializable {
 	private Boolean isActive;
 
 	private String authorization;
+	
+	private String role;
 
 }

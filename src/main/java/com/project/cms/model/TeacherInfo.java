@@ -2,21 +2,28 @@ package com.project.cms.model;
 
 import java.util.List;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class TeacherInfo {
 
-	private String id;
+//	private String id;
 	
 	private DashboardInfo dashboardInfo;
 	
-	private LeaveDetails leaveInfo;
+//	private LeaveDetails leaveInfo;
 	
-	private List<AttendanceInfo> attendanceInfo;
+//	private List<AttendanceInfo> attendanceInfo;
 	
-	private List<SalaryInfo> salaryInfo;
+//	Oprivate List<SalaryInfo> salaryInfo;
 	
 }

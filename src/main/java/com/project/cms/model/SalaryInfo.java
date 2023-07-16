@@ -26,7 +26,7 @@ public class SalaryInfo {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private UUID id;
+	private Long id;
 	
 	private String bankAccount;
 	
@@ -36,7 +36,7 @@ public class SalaryInfo {
 	
 	private String earnings;
 	
-	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date salaryDate;
 	
 	private String netSalary;

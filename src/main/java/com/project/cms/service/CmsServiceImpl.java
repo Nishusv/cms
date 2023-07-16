@@ -3,8 +3,10 @@ package com.project.cms.service;
 import java.util.Base64;
 import java.util.Base64.Decoder;
 import java.util.Base64.Encoder;
-import java.util.stream.Collectors;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContextException;
@@ -19,7 +21,7 @@ import com.project.cms.model.Student;
 import com.project.cms.model.StudentAttendanceInfo;
 import com.project.cms.model.StudentInfo;
 import com.project.cms.model.Teacher;
-import com.project.cms.model.TeacherInfo;
+import com.project.cms.model.TeachersInfo;
 import com.project.cms.model.User;
 import com.project.cms.model.UserRegistration;
 import com.project.cms.repository.StudentRepository;
@@ -54,6 +56,11 @@ public class CmsServiceImpl implements CmsService {
 			String concatCode = user.getFullName() + user.getEmail();
 			String authorization = encode.encodeToString(concatCode.getBytes());
 			userRegistration.setAuthorization(authorization);
+			if (user.getRole().equals("teacher") || user.getRole().equals("student")) {
+				userRegistration.setRole(user.getRole());
+			} else {
+				throw new ApplicationContextException("role should be either teacher or student");
+			}
 			return userRepository.save(userRegistration);
 		} else {
 			throw new ApplicationContextException("password and confirm password should be identical");
@@ -63,6 +70,10 @@ public class CmsServiceImpl implements CmsService {
 
 	public UserRegistration getUser(String emailId) {
 		return userRepository.findByEmail(emailId);
+	}
+
+	public List<UserRegistration> getAllUser() {
+		return userRepository.findAll();
 	}
 
 	public String deleteUser(String emailId) {
@@ -106,19 +117,21 @@ public class CmsServiceImpl implements CmsService {
 		}
 	}
 
-	public Teacher addTeacher(TeacherInfo teacherInfo, HttpHeaders httpHeaders) {
+	public Teacher addTeacher(TeachersInfo teacherInfo, HttpServletRequest httpServletRequest) {
 
-		UserRegistration user = getUser(teacherInfo.getDashboardInfo().getEmail());
+		List<String> allUser = getAllUser().stream().map(x -> x.getAuthorization()).collect(Collectors.toList());
 
-		String auth = httpHeaders.getFirst(HttpHeaders.AUTHORIZATION);
+		String header = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
 
-		if (auth.equals(user.getAuthorization())) {
-
+		Boolean authorized = allUser.contains(header);
+		
+		if (authorized) {
+			
 			List<SalaryInfo> salary = teacherInfo.getSalaryInfo().stream()
 					.map(x -> SalaryInfo.builder().bankAccount(x.getBankAccount()).bankName(x.getBankName())
 							.deduction(x.getDeduction()).earnings(x.getEarnings()).grossSalary(x.getGrossSalary())
 							.month(x.getMonth()).salaryDate(x.getSalaryDate()).netSalary(x.getNetSalary())
-							.totalDeduction(auth).build())
+							.totalDeduction(x.getDeduction()).build())
 					.collect(Collectors.toList());
 
 			AttendanceInfo attendanceInfoLocal = teacherInfo.getAttendanceInfo().get(0);
@@ -134,6 +147,7 @@ public class CmsServiceImpl implements CmsService {
 					.feb(attendanceInfoLocal.getFeb()).mar(attendanceInfoLocal.getMar())
 					.apr(attendanceInfoLocal.getApr()).may(attendanceInfoLocal.getMay())
 					.june(attendanceInfoLocal.getJune()).build();
+
 
 			Teacher teacher = Teacher.builder().name(teacherInfo.getDashboardInfo().getName())
 					.dob(teacherInfo.getDashboardInfo().getDob()).gender(teacherInfo.getDashboardInfo().getGender())
@@ -173,9 +187,9 @@ public class CmsServiceImpl implements CmsService {
 					.feb(attendanceInfoLocal.getFeb()).mar(attendanceInfoLocal.getMar())
 					.apr(attendanceInfoLocal.getApr()).may(attendanceInfoLocal.getMay())
 					.june(attendanceInfoLocal.getJune()).build();
-			
+
 			SemInfo semInfo = studentInfo.getSemDetails().get(0);
-			
+
 			SemInfo sem = SemInfo.builder().sem1(semInfo.getSem1()).sem2(semInfo.getSem2()).sem3(semInfo.getSem3())
 					.sem4(semInfo.getSem4()).sem5(semInfo.getSem5()).sem6(semInfo.getSem6()).build();
 

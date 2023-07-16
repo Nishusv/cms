@@ -12,5 +12,6 @@ public class User {
 	private String password;
 	private String confirmPassword;
 	private String oldPassword;
+	private String role;
 
 }

@@ -9,8 +9,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class DashboardInfo {
-
+public class DashboardInfo2 {
+	
 	private String name;
 
 	private String dob;
@@ -37,5 +37,4 @@ public class DashboardInfo {
 	private Date joiningDate;
 
 	private String fatherName;
-
 }
