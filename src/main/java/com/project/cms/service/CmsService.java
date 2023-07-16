@@ -1,5 +1,7 @@
 package com.project.cms.service;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.http.HttpHeaders;
@@ -29,4 +31,6 @@ public interface CmsService {
 	public Student addStudent(StudentInfo studentInfo, HttpHeaders httpHeaders);
 
 	public Student getStudent(String email);
+
+	public List<UserRegistration> getAll();
 }

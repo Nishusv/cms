@@ -56,7 +56,7 @@ public class CmsServiceImpl implements CmsService {
 			String concatCode = user.getFullName() + user.getEmail();
 			String authorization = encode.encodeToString(concatCode.getBytes());
 			userRegistration.setAuthorization(authorization);
-			if (user.getRole().equals("teacher") || user.getRole().equals("student")) {
+			if (user.getRole().equals("teacher") || user.getRole().equals("student") || user.getRole().equals("admin")) {
 				userRegistration.setRole(user.getRole());
 			} else {
 				throw new ApplicationContextException("role should be either teacher or student");
@@ -210,6 +210,11 @@ public class CmsServiceImpl implements CmsService {
 
 	public Student getStudent(String email) {
 		return studentRepo.findByEmail(email);
+	}
+
+	@Override
+	public List<UserRegistration> getAll() {
+		return userRepository.findAll();
 	}
 
 }

@@ -12,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -70,6 +71,7 @@ public class Teacher {
 	
 	@OneToMany(cascade = CascadeType.ALL)
 	@JoinColumn(name = "fk_salary_info_id")
+	@JoinTable
 	private List<SalaryInfo> salaryInfo;
 	
 	@OneToOne(cascade = CascadeType.ALL)

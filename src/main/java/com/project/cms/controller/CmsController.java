@@ -1,5 +1,7 @@
 package com.project.cms.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,28 +58,17 @@ public class CmsController {
 		return ResponseEntity.ok(cmsService.changePassword(user));
 	}
 	
-//	@PostMapping("/add-teacher")
-//	public ResponseEntity<Teacher> addTeacher(@RequestBody DashboardInfo2 teacher,
-//		HttpHeaders httpHeaders){
-//		String n = "";
-//		return null;
-////		return ResponseEntity.ok(cmsService.addTeacher(teacher, httpHeaders));
-//	}
-	
 	@PostMapping("/add-teacher")
 	public ResponseEntity<Teacher> addTeacher(@RequestBody TeachersInfo dashboard, HttpServletRequest httpServletRequest){
-		System.out.println(dashboard);
-		
 		return ResponseEntity.ok(cmsService.addTeacher(dashboard, httpServletRequest));
 	}
 	
-//	@PostMapping("/add-teachers")
-//	public ResponseEntity<Teacher> addTeachers(@RequestBody TeacherInfo teacher,
-//		HttpHeaders httpHeaders){
-//		String n = "";
-//		return ResponseEntity.ok(cmsService.addTeacher(teacher, httpHeaders));
-//	}
-//	
+	@GetMapping("/fetch-all")
+	public ResponseEntity<List<UserRegistration>> getAll(){
+		return ResponseEntity.ok(cmsService.getAll());
+	}
+	
+	
 	
 	@GetMapping("/get-teacher")
 	public ResponseEntity<Teacher> getTeacher(@RequestParam(value = "email") String email){
