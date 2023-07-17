@@ -1,20 +1,13 @@
 package com.project.cms.model;
 
 import java.sql.Date;
-import java.util.List;
-import java.util.UUID;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -34,7 +27,9 @@ import lombok.NoArgsConstructor;
 public class Teacher {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@SequenceGenerator(name = "teacher_sequence", sequenceName = "teacher_sequence", allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE,
+	generator = "teacher_sequence")
 	private Long id;
 	
 	private String name;
@@ -65,17 +60,4 @@ public class Teacher {
 	
 	private String fatherName;
 	
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "fk_leave_details_id")
-	private LeaveDetails leaveDetails;
-	
-	@OneToMany(cascade = CascadeType.ALL)
-	@JoinColumn(name = "fk_salary_info_id")
-	@JoinTable
-	private List<SalaryInfo> salaryInfo;
-	
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "fk_attendance_info_id")
-	private AttendanceInfo attendanceInfo;
-
 }

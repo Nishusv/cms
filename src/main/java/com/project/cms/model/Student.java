@@ -1,15 +1,11 @@
 package com.project.cms.model;
 
-import java.util.UUID;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -27,8 +23,10 @@ import lombok.NoArgsConstructor;
 public class Student {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private UUID id;
+	@SequenceGenerator(name = "student_sequence", sequenceName = "student_sequence", allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE,
+	generator = "student_sequence")
+	private Long id;
 	
 	private String name;
 	
@@ -45,12 +43,4 @@ public class Student {
 	
 	private String fatherName;
 	
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "fk_student_attendance_info_id")
-	private StudentAttendanceInfo attendanceInfo;
-	
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "fk_sem_info_id")
-	private SemInfo semInfo; 
-
 }

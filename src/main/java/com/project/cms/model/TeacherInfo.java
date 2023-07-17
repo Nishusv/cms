@@ -4,7 +4,6 @@ import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,14 +15,14 @@ import lombok.Setter;
 @AllArgsConstructor
 public class TeacherInfo {
 
-//	private String id;
+	private String id;
 	
 	private DashboardInfo dashboardInfo;
 	
-//	private LeaveDetails leaveInfo;
+	private LeaveResponseDetails leaveInfo;
 	
-//	private List<AttendanceInfo> attendanceInfo;
+	private List<AttendanceResponseInfo> attendanceInfo;
 	
-//	Oprivate List<SalaryInfo> salaryInfo;
+	private List<SalaryResponseInfo> salaryInfo;
 	
 }

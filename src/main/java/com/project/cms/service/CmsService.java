@@ -10,7 +10,6 @@ import com.project.cms.model.Student;
 import com.project.cms.model.StudentInfo;
 import com.project.cms.model.Teacher;
 import com.project.cms.model.TeacherInfo;
-import com.project.cms.model.TeachersInfo;
 import com.project.cms.model.User;
 import com.project.cms.model.UserRegistration;
 
@@ -24,13 +23,13 @@ public interface CmsService {
 
 	public UserRegistration changePassword(User user);
 
-	public Teacher addTeacher(TeachersInfo dashboard, HttpServletRequest httpServletRequest);
+	public TeacherInfo addTeacher(TeacherInfo dashboard, HttpServletRequest httpServletRequest);
 
-	public Teacher getTeacher(String email);
+	public TeacherInfo getTeacher(String email);
 
-	public Student addStudent(StudentInfo studentInfo, HttpHeaders httpHeaders);
+	public StudentInfo addStudent(StudentInfo studentInfo, HttpServletRequest httpHeaders);
 
-	public Student getStudent(String email);
+	public StudentInfo getStudent(String email);
 
 	public List<UserRegistration> getAll();
 }

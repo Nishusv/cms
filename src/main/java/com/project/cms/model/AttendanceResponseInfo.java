@@ -14,21 +14,16 @@ import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
-@Entity
-@Table(name = "student_attendance_info")
 @Builder
-public class StudentAttendanceInfo {
-	
-	@Id
-	@SequenceGenerator(name = "student_attendance_info_sequence", sequenceName = "student_attendance_info_sequence", allocationSize = 1)
-	@GeneratedValue(strategy = GenerationType.SEQUENCE,
-	generator = "student_attendance_info_sequence")
-	private Long id;
+@Setter
+@Getter
+public class AttendanceResponseInfo {
 	
 	private String jan;
 	
@@ -42,8 +37,4 @@ public class StudentAttendanceInfo {
 	
 	private String june;
 	
-	@OneToOne(targetEntity = Student.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name="fk_student_id", referencedColumnName = "id")
-	private Student student;
-
 }

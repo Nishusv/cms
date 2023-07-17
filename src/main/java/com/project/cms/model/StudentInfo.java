@@ -13,8 +13,8 @@ public class StudentInfo {
 	
 	private DashboardInfo dashboardInfo;
 	
-	private List<SemInfo> semDetails;
+	private List<SemResponseInfo> semDetails;
 	
-	private List<StudentAttendanceInfo> attendanceInfo;
+	private List<StudentAttendanceResponseInfo> attendanceInfo;
 	
 }
