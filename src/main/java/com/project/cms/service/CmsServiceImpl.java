@@ -64,10 +64,10 @@ public class CmsServiceImpl implements CmsService {
 
 	@Autowired
 	private LeaveDetailsRepository leaveDetailsRepository;
-	
+
 	@Autowired
 	private StudentAttendanceInfoRepository studentAttendanceInfoRepository;
-	
+
 	@Autowired
 	private StudentSemInfoRepository semInfoRepository;
 
@@ -156,7 +156,7 @@ public class CmsServiceImpl implements CmsService {
 		if (authorized) {
 
 			AttendanceResponseInfo attendanceResponseInfo = teacherInfo.getAttendanceInfo().get(0);
-			
+
 			AttendanceInfo attendanceInfoLocal = AttendanceInfo.builder().jan(attendanceResponseInfo.getJan())
 					.feb(attendanceResponseInfo.getFeb()).mar(attendanceResponseInfo.getMar())
 					.apr(attendanceResponseInfo.getApr()).may(attendanceResponseInfo.getMay())
@@ -218,38 +218,38 @@ public class CmsServiceImpl implements CmsService {
 				.address(teacherResponse.getAddress()).lastWorkingCompany(teacherResponse.getLastWorkingCompany())
 				.presentWorkingCompany(teacherResponse.getPresentCompany())
 				.joiningDate(teacherResponse.getJoiningDate()).fatherName(teacherResponse.getFatherName()).build();
-		
+
 		LeaveResponseDetails leaveDetails = LeaveResponseDetails.builder().annualLeave(leaveResponse.getAnnualLeave())
 				.annualLeaveUsed(leaveResponse.getAnnualLeaveUsed()).otherLeave(leaveResponse.getOtherLeave())
 				.otherLeaveUsed(leaveResponse.getOtherLeaveUsed()).sickLeave(leaveResponse.getSickLeave())
 				.sickLeaveUsed(leaveResponse.getSickLeaveUsed()).build();
-		
+
 		AttendanceResponseInfo attendanceInfo = AttendanceResponseInfo.builder().jan(attendanceInfoResponse.getJan())
 				.feb(attendanceInfoResponse.getFeb()).mar(attendanceInfoResponse.getMar())
 				.apr(attendanceInfoResponse.getApr()).may(attendanceInfoResponse.getMay())
 				.june(attendanceInfoResponse.getJune()).build();
-		
-		List<SalaryResponseInfo> salaryResponseInfo = salaryInfoResponse.stream().map(x -> SalaryResponseInfo.builder()
-				.bankAccount(x.getBankAccount())
-				.bankName(x.getBankName()).deduction(x.getDeduction()).earnings(x.getEarnings()).grossSalary(x.getGrossSalary())
-				.month(x.getMonth()).name(x.getName()).netSalary(x.getNetSalary()).salaryDate(x.getSalaryDate()).netSalary(x.getNetSalary()).build()).collect(Collectors.toList());
-				
-		
+
+		List<SalaryResponseInfo> salaryResponseInfo = salaryInfoResponse.stream()
+				.map(x -> SalaryResponseInfo.builder().bankAccount(x.getBankAccount()).bankName(x.getBankName())
+						.deduction(x.getDeduction()).earnings(x.getEarnings()).grossSalary(x.getGrossSalary())
+						.month(x.getMonth()).name(x.getName()).netSalary(x.getNetSalary()).salaryDate(x.getSalaryDate())
+						.netSalary(x.getNetSalary()).build())
+				.collect(Collectors.toList());
 
 		return TeacherInfo.builder().id(teacherResponse.getId().toString()).dashboardInfo(dashBoard)
-				.leaveInfo(leaveDetails).attendanceInfo(Arrays.asList(attendanceInfo))
-				.salaryInfo(salaryResponseInfo).build();
+				.leaveInfo(leaveDetails).attendanceInfo(Arrays.asList(attendanceInfo)).salaryInfo(salaryResponseInfo)
+				.build();
 
 	}
 
 	public TeacherInfo getTeacher(String email) {
-		
+
 		Teacher teachResponse = teacherRepo.findByEmail(email);
 		AttendanceInfo attendanceInfo = attendanceRepo.findByTeacher(teachResponse.getId());
 		List<SalaryInfo> salaryInfo = salaryInfoRepo.findByTeacher(teachResponse.getId());
 		LeaveDetails leaveDetails = leaveDetailsRepository.findByTeacher(teachResponse.getId());
 		return getTeacherDetail(teachResponse, attendanceInfo, salaryInfo, leaveDetails);
-		
+
 	}
 
 	public StudentInfo addStudent(StudentInfo studentInfo, HttpServletRequest httpServletRequest) {
@@ -261,30 +261,28 @@ public class CmsServiceImpl implements CmsService {
 		Boolean authorized = allUser.contains(header);
 
 		if (authorized) {
-			
-			StudentAttendanceResponseInfo attendanceInfoLocal = studentInfo.getAttendanceInfo().get(0);
 
-			StudentAttendanceInfo attendanceInfo = StudentAttendanceInfo.builder().jan(attendanceInfoLocal.getJan())
-					.feb(attendanceInfoLocal.getFeb()).mar(attendanceInfoLocal.getMar())
-					.apr(attendanceInfoLocal.getApr()).may(attendanceInfoLocal.getMay())
-					.june(attendanceInfoLocal.getJune()).build();
+			StudentAttendanceResponseInfo attendanceInfoLocal = studentInfo.getAttendanceInfo().get(0);
 
 			SemResponseInfo semInfo = studentInfo.getSemDetails().get(0);
 
-			SemInfo sem = SemInfo.builder().sem1(semInfo.getSem1()).sem2(semInfo.getSem2()).sem3(semInfo.getSem3())
-					.sem4(semInfo.getSem4()).sem5(semInfo.getSem5()).sem6(semInfo.getSem6()).build();
-
-			Student teacher = Student.builder().name(studentInfo.getDashboardInfo().getName())
+			Student student = Student.builder().name(studentInfo.getDashboardInfo().getName())
 					.dob(studentInfo.getDashboardInfo().getDob()).gender(studentInfo.getDashboardInfo().getGender())
 					.mobile(studentInfo.getDashboardInfo().getMobile()).email(studentInfo.getDashboardInfo().getEmail())
 					.address(studentInfo.getDashboardInfo().getAddress())
 					.fatherName(studentInfo.getDashboardInfo().getFatherName()).build();
+			StudentAttendanceInfo attendanceInfo = StudentAttendanceInfo.builder().jan(attendanceInfoLocal.getJan())
+					.feb(attendanceInfoLocal.getFeb()).mar(attendanceInfoLocal.getMar())
+					.apr(attendanceInfoLocal.getApr()).may(attendanceInfoLocal.getMay())
+					.june(attendanceInfoLocal.getJune()).student(student).build();
+			SemInfo sem = SemInfo.builder().sem1(semInfo.getSem1()).sem2(semInfo.getSem2()).sem3(semInfo.getSem3())
+					.sem4(semInfo.getSem4()).sem5(semInfo.getSem5()).sem6(semInfo.getSem6()).student(student).build();
 
-			 Student studentRecord = studentRepo.save(teacher);
-			 StudentAttendanceInfo attendanceResponse = studentAttendanceInfoRepository.save(attendanceInfo);
-			 SemInfo semInfoResponse = semInfoRepository.save(sem);
-			 
-			 return getStudentInfo(studentRecord,attendanceResponse,semInfoResponse);
+			Student studentRecord = studentRepo.save(student);
+			StudentAttendanceInfo attendanceResponse = studentAttendanceInfoRepository.save(attendanceInfo);
+			SemInfo semInfoResponse = semInfoRepository.save(sem);
+
+			return getStudentInfo(studentRecord, attendanceResponse, semInfoResponse);
 
 		} else {
 			throw new ApplicationContextException("User is not authorized to do the transaction");
@@ -294,30 +292,30 @@ public class CmsServiceImpl implements CmsService {
 
 	private StudentInfo getStudentInfo(Student studentRecord, StudentAttendanceInfo attendanceResponse,
 			SemInfo semInfoResponse) {
-		StudentAttendanceResponseInfo attendanceInfo = StudentAttendanceResponseInfo.builder().jan(attendanceResponse.getJan())
-				.feb(attendanceResponse.getFeb()).mar(attendanceResponse.getMar()).apr(attendanceResponse.getApr())
-				.may(attendanceResponse.getMay()).june(attendanceResponse.getJune()).build();
-		
+		StudentAttendanceResponseInfo attendanceInfo = StudentAttendanceResponseInfo.builder()
+				.jan(attendanceResponse.getJan()).feb(attendanceResponse.getFeb()).mar(attendanceResponse.getMar())
+				.apr(attendanceResponse.getApr()).may(attendanceResponse.getMay()).june(attendanceResponse.getJune())
+				.build();
+
 		DashboardInfo dashBoard = DashboardInfo.builder().name(studentRecord.getName()).dob(studentRecord.getDob())
-				.gender(studentRecord.getGender()).mobile(studentRecord.getMobile())
-				.email(studentRecord.getEmail())
-				.address(studentRecord.getAddress()).fatherName(studentRecord.getFatherName()).build(); 
-		
+				.gender(studentRecord.getGender()).mobile(studentRecord.getMobile()).email(studentRecord.getEmail())
+				.address(studentRecord.getAddress()).fatherName(studentRecord.getFatherName()).build();
+
 		SemResponseInfo semInfo = SemResponseInfo.builder().sem1(semInfoResponse.getSem1())
-				.sem2(semInfoResponse.getSem2()).sem3(semInfoResponse.getSem3()).sem4(semInfoResponse.getSem4()).sem5(semInfoResponse.getSem5())
-				.sem6(semInfoResponse.getSem6()).build();
-		
+				.sem2(semInfoResponse.getSem2()).sem3(semInfoResponse.getSem3()).sem4(semInfoResponse.getSem4())
+				.sem5(semInfoResponse.getSem5()).sem6(semInfoResponse.getSem6()).build();
+
 		return StudentInfo.builder().attendanceInfo(Arrays.asList(attendanceInfo)).dashboardInfo(dashBoard)
 				.id(studentRecord.getId().toString()).semDetails(Arrays.asList(semInfo)).build();
-		}
+	}
 
 	public StudentInfo getStudent(String email) {
-		
+
 		Student studentRecord = studentRepo.findByEmail(email);
-		 StudentAttendanceInfo attendanceResponse = studentAttendanceInfoRepository.findByStudent(studentRecord.getId());
-		 SemInfo semInfoResponse = semInfoRepository.findByStudent(studentRecord.getId());
-		 
-		 return getStudentInfo(studentRecord,attendanceResponse,semInfoResponse);
+		StudentAttendanceInfo attendanceResponse = studentAttendanceInfoRepository.findByStudent(studentRecord.getId());
+		SemInfo semInfoResponse = semInfoRepository.findByStudent(studentRecord.getId());
+
+		return getStudentInfo(studentRecord, attendanceResponse, semInfoResponse);
 
 	}
 
